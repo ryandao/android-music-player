@@ -1,9 +1,14 @@
 package com.example.ryandao.musicplayer;
 
 import android.app.Activity;
+import android.content.ContentUris;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -79,8 +84,7 @@ public class MainActivity extends Activity {
     Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
     Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
 
-    if(musicCursor!=null && musicCursor.moveToFirst()){
-      //get columns
+    if (musicCursor!=null && musicCursor.moveToFirst()) {
       int titleColumn = musicCursor.getColumnIndex
               (android.provider.MediaStore.Audio.Media.TITLE);
       int idColumn = musicCursor.getColumnIndex
@@ -92,14 +96,23 @@ public class MainActivity extends Activity {
         long thisId = musicCursor.getLong(idColumn);
         String thisTitle = musicCursor.getString(titleColumn);
         String thisArtist = musicCursor.getString(artistColumn);
-        songList.add(new Song(thisId, thisTitle, thisArtist));
+        Uri trackUri = ContentUris.withAppendedId(
+                android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                thisId);
+        songList.add(new Song(thisId, thisTitle, thisArtist, trackUri));
       }
       while (musicCursor.moveToNext());
     }
   }
 
-  public void songPicked(View view){
-    musicSrv.setSong(Integer.parseInt(view.getTag().toString()));
+  public void songPicked(View view) {
+    int songId = Integer.parseInt(view.getTag().toString());
+
+    // TODO: Generate data from the song file and send to Spark core.
+    File file = new File(songList.get(songId).getFileUri().getPath());
+
+    // Play the song. This should be done after data sending.
+    musicSrv.setSong(songId);
     musicSrv.playSong();
   }
 

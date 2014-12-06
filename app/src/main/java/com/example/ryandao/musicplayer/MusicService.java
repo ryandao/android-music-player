@@ -64,7 +64,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
       android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
       currSong);
 
-    try{
+    try {
       player.setDataSource(getApplicationContext(), trackUri);
     }
     catch(Exception e){
