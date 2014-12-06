@@ -13,10 +13,10 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@android:style/Theme.Black" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
+            android:label="All Your Music"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
             <intent-filter>

@@ -1,6 +1,7 @@
 package com.example.ryandao.musicplayer;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,8 +30,6 @@ import android.content.ServiceConnection;
 import android.view.MenuItem;
 import android.view.View;
 import com.example.ryandao.musicplayer.MusicService.MusicBinder;
-
-import javax.xml.transform.Result;
 
 public class MainActivity extends Activity {
   private ArrayList<Song> songList;
@@ -88,7 +87,7 @@ public class MainActivity extends Activity {
 
   public void getSongList() {
     ContentResolver musicResolver = getContentResolver();
-    Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+    Uri musicUri = MediaStore.Audio.Media.INTERNAL_CONTENT_URI;
     Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
 
     if (musicCursor!=null && musicCursor.moveToFirst()) {
@@ -152,6 +151,7 @@ public class MainActivity extends Activity {
   }
 
   private class ServerSendTask extends AsyncTask<String, Void, Void> {
+    private final ProgressDialog dialog = new ProgressDialog(MainActivity.this);
     private int songId;
     private Socket socket;
 
@@ -160,7 +160,16 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onPreExecute() {
+      this.dialog.setMessage("Processing...");
+      this.dialog.show();
+    }
+
+    @Override
     protected void onPostExecute(Void result) {
+      if (this.dialog.isShowing()) {
+        this.dialog.dismiss();
+      }
       playSong(songId);
     }
 

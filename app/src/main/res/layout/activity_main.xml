@@ -3,13 +3,14 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:orientation="vertical"
-              android:background="#aa0"
-              tools:context=".MainActivity" >
+              tools:context=".MainActivity"
+              android:clickable="false">
 
     <ListView
         android:id="@+id/song_list"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        >
     </ListView>
 
 </LinearLayout>
