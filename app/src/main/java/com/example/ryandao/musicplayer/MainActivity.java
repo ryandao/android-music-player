@@ -2,6 +2,7 @@ package com.example.ryandao.musicplayer;
 
 import android.app.Activity;
 import android.content.ContentUris;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -24,6 +25,8 @@ import android.content.ServiceConnection;
 import android.view.MenuItem;
 import android.view.View;
 import com.example.ryandao.musicplayer.MusicService.MusicBinder;
+
+import javax.xml.transform.Result;
 
 public class MainActivity extends Activity {
   private ArrayList<Song> songList;
@@ -107,11 +110,10 @@ public class MainActivity extends Activity {
 
   public void songPicked(View view) {
     int songId = Integer.parseInt(view.getTag().toString());
+    new ServerSendTask(songId).execute("");
+  }
 
-    // TODO: Generate data from the song file and send to Spark core.
-    File file = new File(songList.get(songId).getFileUri().getPath());
-
-    // Play the song. This should be done after data sending.
+  public void playSong(int songId) {
     musicSrv.setSong(songId);
     musicSrv.playSong();
   }
@@ -143,5 +145,26 @@ public class MainActivity extends Activity {
     stopService(playIntent);
     musicSrv = null;
     super.onDestroy();
+  }
+
+  private class ServerSendTask extends AsyncTask<String, Void, Void> {
+    private int songId;
+
+    public ServerSendTask(int songId) {
+      this.songId = songId;
+    }
+
+    @Override
+    protected void onPostExecute(Void result) {
+      playSong(songId);
+    }
+
+    @Override
+    protected Void doInBackground(String... params) {
+      // TODO: Generate data from the song file and send to Spark core.
+      File file = new File(songList.get(songId).getFileUri().getPath());
+      System.out.println(file.getAbsolutePath());
+      return null;
+    }
   }
 }
