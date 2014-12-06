@@ -104,7 +104,7 @@ public class MainActivity extends Activity {
         String thisTitle = musicCursor.getString(titleColumn);
         String thisArtist = musicCursor.getString(artistColumn);
         Uri trackUri = ContentUris.withAppendedId(
-                android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                MediaStore.Audio.Media.INTERNAL_CONTENT_URI,
                 thisId);
         songList.add(new Song(thisId, thisTitle, thisArtist, trackUri));
       }
@@ -170,6 +170,7 @@ public class MainActivity extends Activity {
       File file = new File(songList.get(songId).getFileUri().getPath());
       try {
         byte[] data = new AudioProcessor(file).process();
+          System.out.println("data.length = " + data.length);
         sendBytes(data);
       } catch (Exception e) {
         e.printStackTrace();
