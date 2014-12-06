@@ -9,7 +9,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -149,6 +153,7 @@ public class MainActivity extends Activity {
 
   private class ServerSendTask extends AsyncTask<String, Void, Void> {
     private int songId;
+    private Socket socket;
 
     public ServerSendTask(int songId) {
       this.songId = songId;
@@ -163,8 +168,38 @@ public class MainActivity extends Activity {
     protected Void doInBackground(String... params) {
       // TODO: Generate data from the song file and send to Spark core.
       File file = new File(songList.get(songId).getFileUri().getPath());
-      System.out.println(file.getAbsolutePath());
+      try {
+        byte[] data = new AudioProcessor(file).process();
+        sendBytes(data);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
       return null;
+    }
+
+    public void sendBytes(byte[] myByteArray) throws IOException {
+      String host = "192.168.43.141";
+      int port = 23;
+      socket = new Socket(host, port);
+      sendBytes(myByteArray, 0, myByteArray.length);
+    }
+
+    public void sendBytes(byte[] myByteArray, int start, int len) throws IOException {
+      if (len < 0)
+        throw new IllegalArgumentException("Negative length not allowed");
+      if (start < 0 || start >= myByteArray.length)
+        throw new IndexOutOfBoundsException("Out of bounds: " + start);
+      // Other checks if needed.
+
+      // May be better to save the streams in the support class;
+      // just like the socket variable.
+      OutputStream out = socket.getOutputStream();
+      DataOutputStream dos = new DataOutputStream(out);
+
+      dos.writeInt(len);
+      if (len > 0) {
+        dos.write(myByteArray, start, len);
+      }
     }
   }
 }
