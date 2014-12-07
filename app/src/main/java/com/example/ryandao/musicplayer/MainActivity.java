@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -87,7 +88,7 @@ public class MainActivity extends Activity {
 
   public void getSongList() {
     ContentResolver musicResolver = getContentResolver();
-    Uri musicUri = MediaStore.Audio.Media.INTERNAL_CONTENT_URI;
+    Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
     Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
 
     if (musicCursor!=null && musicCursor.moveToFirst()) {
@@ -103,7 +104,7 @@ public class MainActivity extends Activity {
         String thisTitle = musicCursor.getString(titleColumn);
         String thisArtist = musicCursor.getString(artistColumn);
         Uri trackUri = ContentUris.withAppendedId(
-                MediaStore.Audio.Media.INTERNAL_CONTENT_URI,
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 thisId);
         songList.add(new Song(thisId, thisTitle, thisArtist, trackUri));
       }
@@ -180,7 +181,7 @@ public class MainActivity extends Activity {
       try {
         byte[] data = new AudioProcessor(file).process();
           System.out.println("data.length = " + data.length);
-        sendBytes(data);
+//        sendBytes(data);
       } catch (Exception e) {
         e.printStackTrace();
       }
